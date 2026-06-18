@@ -1,0 +1,36 @@
+# =========================================
+# Backend Python / FastAPI
+# =========================================
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/**/*.py[cod]
+backend/**/*$py.class
+backend/.env
+backend/*.egg-info/
+backend/dist/
+backend/build/
+
+# PostgreSQL portatile - contiene i dati del DB locale, NON va in git
+backend/postgresql/
+backend/postgresql.zip
+
+# =========================================
+# Frontend (React / Node) - Fase futura
+# =========================================
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/dist/
+frontend/build/
+
+# =========================================
+# Generali
+# =========================================
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+*.swp
+*.swo
