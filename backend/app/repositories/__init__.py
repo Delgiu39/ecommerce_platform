@@ -7,6 +7,7 @@ from app.repositories.product import (
     delete_product,
 )
 from app.repositories.order import get_order, get_orders_for_user, create_order
+from app.repositories.payment import create_payment, get_payment_by_intent_id, update_payment_status
 
 __all__ = [
     "get_user",
@@ -20,4 +21,7 @@ __all__ = [
     "get_order",
     "get_orders_for_user",
     "create_order",
+    "create_payment",
+    "get_payment_by_intent_id",
+    "update_payment_status",
 ]
