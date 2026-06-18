@@ -43,5 +43,15 @@ async def get_current_user(
         )
     return user
 
-__all__ = ["get_db", "get_current_user"]
+def get_current_active_superuser(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user does not have enough privileges"
+        )
+    return current_user
+
+__all__ = ["get_db", "get_current_user", "get_current_active_superuser"]
 
