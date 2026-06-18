@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     
     DATABASE_URL: Optional[str] = None
 
+    # Security Settings
+    SECRET_KEY: str = "92a838df2c5e52c8b74c3e80e18bb3efc023d8c1ee12d591b7d5a5cfcd8198f3"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+
     @property
     def async_database_url(self) -> str:
         if self.DATABASE_URL:
