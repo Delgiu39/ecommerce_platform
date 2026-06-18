@@ -49,7 +49,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 # Configurazione CORS per il collegamento con il frontend React (locale)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173", "*"],  # 3000 = React CRA, 5173 = React Vite
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

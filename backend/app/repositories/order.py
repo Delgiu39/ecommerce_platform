@@ -49,9 +49,9 @@ async def create_order(db: AsyncSession, user_id: UUID, order_in: OrderCreate) -
 
     # Iteriamo sui prodotti dell'ordine per validarli ed elaborare prezzi/stock
     for item in order_in.items:
-        # Recuperiamo il prodotto dal database
+        # Recuperiamo il prodotto dal database con un blocco riga per evitare race condition
         product_result = await db.execute(
-            select(Product).where(Product.id == item.product_id)
+            select(Product).where(Product.id == item.product_id).with_for_update()
         )
         product = product_result.scalars().first()
 

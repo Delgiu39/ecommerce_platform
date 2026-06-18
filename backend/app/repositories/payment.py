@@ -83,10 +83,10 @@ async def update_payment_status(
                 order.status = "failed"
                 db.add(order)
                 
-                # Ripristino dello stock per ciascun prodotto nell'ordine
+                # Ripristino dello stock per ciascun prodotto nell'ordine con un blocco riga
                 for item in order.items:
                     product_result = await db.execute(
-                        select(Product).where(Product.id == item.product_id)
+                        select(Product).where(Product.id == item.product_id).with_for_update()
                     )
                     product = product_result.scalars().first()
                     if product:

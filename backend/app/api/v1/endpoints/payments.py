@@ -107,7 +107,18 @@ async def stripe_webhook(
     sig_header = request.headers.get("stripe-signature")
 
     event = None
-    if settings.STRIPE_SECRET_KEY and settings.STRIPE_WEBHOOK_SECRET and sig_header:
+    # Se Stripe è configurato in produzione, la verifica della firma è strettamente obbligatoria
+    if settings.STRIPE_SECRET_KEY:
+        if not settings.STRIPE_WEBHOOK_SECRET:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Configurazione Stripe incompleta: manca STRIPE_WEBHOOK_SECRET"
+            )
+        if not sig_header:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Signature header (stripe-signature) mancante. Firma obbligatoria in produzione."
+            )
         try:
             stripe.api_key = settings.STRIPE_SECRET_KEY
             event = stripe.Webhook.construct_event(
@@ -118,7 +129,7 @@ async def stripe_webhook(
         except stripe.error.SignatureVerificationError:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Firma webhook non valida")
     else:
-        # Se non configurato o in Mock Mode, leggiamo il JSON direttamente
+        # Modalità Mock (solo per sviluppo locale in assenza di chiavi Stripe)
         try:
             event = json.loads(payload.decode("utf-8"))
         except Exception:
@@ -154,11 +165,13 @@ async def simulate_stripe_webhook(
     db: AsyncSession = Depends(get_db),
     payment_intent_id: str,
     event_type: str,  # succeeded o failed
-    charge_id: str = "mock_ch_12345"
+    charge_id: str = "mock_ch_12345",
+    current_admin: User = Depends(deps.get_current_active_superuser)
 ):
     """
     Endpoint di utilità per test locali e simulazioni.
     Consente di attivare lo stato succeeded/failed di un pagamento senza passare da Stripe CLI.
+    Richiede privilegi di amministratore.
     """
     if event_type == "succeeded":
         status_val = "succeeded"

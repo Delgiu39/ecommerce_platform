@@ -21,9 +21,12 @@ class Settings(BaseSettings):
     DATABASE_URL: Optional[str] = None
 
     # Security Settings
-    SECRET_KEY: str = "92a838df2c5e52c8b74c3e80e18bb3efc023d8c1ee12d591b7d5a5cfcd8198f3"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    # CORS Settings
+    BACKEND_CORS_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173"]
 
     # Stripe Settings
     STRIPE_SECRET_KEY: Optional[str] = None
