@@ -11,20 +11,36 @@ from app.api.v1.api import api_router
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+import os
+from fastapi.concurrency import run_in_threadpool
+from alembic.config import Config
+from alembic import command
+
+def run_migrations():
+    """
+    Esegue programmaticamente le migrazioni di database con Alembic.
+    """
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    ini_path = os.path.join(base_dir, "..", "alembic.ini")
+    
+    # Istanziamo la configurazione di Alembic puntando al file ini
+    alembic_cfg = Config(ini_path)
+    
+    # Impostiamo la directory dello script in modo assoluto
+    alembic_cfg.set_main_option("script_location", os.path.join(base_dir, "..", "alembic"))
+    
+    logger.info("Avvio upgrade database ad 'head' tramite Alembic...")
+    command.upgrade(alembic_cfg, "head")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Avvio dell'applicazione FastAPI...")
     
-    # Bootstrap automatico delle tabelle del database su PostgreSQL.
-    # Nelle fasi successive useremo Alembic, ma questo assicura che il server
-    # parta immediatamente creando le tabelle al primo avvio.
+    # Esecuzione delle migrazioni del database tramite Alembic all'avvio.
     try:
-        async with engine.begin() as conn:
-            logger.info("Verifica/Creazione tabelle nel database...")
-            # Importa tutti i modelli per assicurarsi che siano registrati su Base.metadata
-            from app.models import User, Product, Order, OrderItem, Payment
-            await conn.run_sync(Base.metadata.create_all)
-        logger.info("Connessione al database riuscita e tabelle pronte.")
+        logger.info("Verifica/Esecuzione migrazioni nel database...")
+        await run_in_threadpool(run_migrations)
+        logger.info("Connessione al database riuscita e schema allineato.")
     except Exception as e:
         logger.error(f"Errore durante l'inizializzazione del database: {e}")
         raise e
