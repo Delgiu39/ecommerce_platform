@@ -215,7 +215,40 @@ ecommerce_platform/
 
 ## Configurazione e Avvio
 
-### 1. Avvio del Database PostgreSQL
+### Metodo Automatico (Consigliato — Windows)
+
+Per avviare l'intera applicazione con un unico comando usa gli script inclusi nella root del progetto.
+
+Questi script eseguono automaticamente:
+1. **Verifica dei prerequisiti** — controllano che `python` e `node` siano disponibili nel PATH.
+2. **Configurazione Backend** — creano il `venv` Python, installano le dipendenze da `requirements.txt` (con auto-riparazione del venv se corrotto), copiano `.env.example` in `.env` e generano una `SECRET_KEY` crittografica sicura se mancante.
+3. **Configurazione Frontend** — eseguono `npm install` se `node_modules` non è presente.
+4. **Avvio PostgreSQL** — avviano il database portatile con `pg_ctl -w start` (attende la conferma di avvio prima di proseguire) e creano il database `ecommerce_db` se non esiste.
+5. **Avvio Backend e Frontend** — aprono due finestre separate con il server FastAPI (porta 8000) e il dev server Vite (porta 5173).
+6. **Apertura automatica del browser** su `http://localhost:5173`.
+7. **Spegnimento pulito** — alla pressione di INVIO, arrestano PostgreSQL con `pg_ctl stop` prima di chiudersi.
+
+> [!IMPORTANT]
+> Il database PostgreSQL portatile è incluso nella cartella `backend/postgresql/` — non è necessario installare nulla di aggiuntivo.
+
+#### Opzione A — Doppio Clic (CMD Batch)
+Fai doppio clic su `start.bat` nella cartella principale del progetto, oppure eseguilo da terminale:
+```cmd
+.\start.bat
+```
+
+#### Opzione B — PowerShell
+```powershell
+.\start.ps1
+```
+
+---
+
+### Metodo Manuale (Dettagliato)
+
+Se preferisci controllare singolarmente ogni servizio o se non sei su Windows:
+
+#### 1. Avvio del Database PostgreSQL
 
 **Opzione A — Binario portatile incluso (Windows)**
 
@@ -236,7 +269,7 @@ CREATE DATABASE ecommerce_db;
 
 ---
 
-### 2. Avvio del Backend FastAPI
+#### 2. Avvio del Backend FastAPI
 
 ```powershell
 cd "ecommerce_platform\backend"
@@ -264,7 +297,7 @@ Il backend sara disponibile su: **http://127.0.0.1:8000**
 
 ---
 
-### 3. Avvio del Frontend React
+#### 3. Avvio del Frontend React
 
 ```powershell
 cd "ecommerce_platform\frontend"
@@ -279,6 +312,7 @@ npm run dev
 Il frontend sara disponibile su: **http://localhost:5173**
 
 ---
+
 
 ## Variabili d'Ambiente
 
