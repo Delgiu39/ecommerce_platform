@@ -207,9 +207,11 @@ ecommerce_platform/
 
 ## Prerequisiti
 
-- **Python** 3.11 o superiore
-- **Node.js** 18 o superiore (con npm)
-- **PostgreSQL** 14+ (oppure usare il binario portatile incluso in `backend/postgresql/` per Windows)
+| Requisito | Versione minima | Note |
+|---|---|---|
+| **Python** | 3.11+ | `python3 --version` |
+| **Node.js** | 18+ | `node --version` |
+| **PostgreSQL** | 14+ | Solo per macOS/Linux — su Windows è incluso il binario portatile |
 
 ---
 
@@ -244,9 +246,52 @@ Fai doppio clic su `start.bat` nella cartella principale del progetto, oppure es
 
 ---
 
+### Metodo Automatico — macOS e Linux
+
+Usa lo script `start.sh` incluso nel progetto. Prima di eseguirlo, assicurati di aver installato PostgreSQL sul tuo sistema.
+
+#### Installazione prerequisiti
+
+**macOS (Homebrew):**
+```bash
+brew install python3 node postgresql@16
+brew services start postgresql@16
+```
+
+**Ubuntu / Debian:**
+```bash
+sudo apt update
+sudo apt install python3 python3-venv python3-pip nodejs npm postgresql postgresql-contrib
+sudo systemctl enable --now postgresql
+```
+
+**Fedora / RHEL:**
+```bash
+sudo dnf install python3 nodejs postgresql-server postgresql-contrib
+sudo postgresql-setup --initdb
+sudo systemctl enable --now postgresql
+```
+
+#### Avvio con start.sh
+
+```bash
+# Rendi eseguibile lo script (solo la prima volta)
+chmod +x start.sh
+
+# Avvia tutto
+./start.sh
+```
+
+Lo script esegue automaticamente: setup venv, pip install, npm install, avvio PostgreSQL (tramite `brew services` su macOS o `systemctl` su Linux), creazione del database, avvio di backend e frontend in finestre di terminale separate e apertura del browser.
+
+> [!NOTE]
+> Su Linux, la creazione del database potrebbe richiedere `sudo`. Lo script lo gestisce automaticamente. Se il tuo sistema usa un utente PostgreSQL diverso da `postgres`, modifica il file `backend/.env` di conseguenza.
+
+---
+
 ### Metodo Manuale (Dettagliato)
 
-Se preferisci controllare singolarmente ogni servizio o se non sei su Windows:
+Se preferisci avviare ogni servizio separatamente, o se i metodi automatici non funzionano sul tuo sistema:
 
 #### 1. Avvio del Database PostgreSQL
 
